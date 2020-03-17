@@ -1,0 +1,6 @@
+[submodule "lib/curl"]
+	path = lib/curl
+	url = https://github.com/PiyushDatta/curl
+[submodule "lib/googletest"]
+	path = lib/googletest
+	url = https://github.com/PiyushDatta/googletest
