@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2)
 
-project(simple_curl_cpp)
+project(simple_curl_cpp_project)
 
 set(BUILD_SHARED_LIBS OFF)
 set(CMAKE_CXX_STANDARD 14)
