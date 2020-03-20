@@ -55,7 +55,7 @@ TEST_F(CurlClientTest, SetOption) {
   EXPECT_EQ(0, curl_resp.first);
 
   actual_resp = "{\"headers\":{\"x-forwarded-proto\":\"https\",\"host\":"
-                "\"postman-echo.com\",\"accept\":\"*\/*\",\"my-sample-header\":"
+                "\"postman-echo.com\",\"accept\":\"*\\/*\",\"my-sample-header\":"
                 "\"Lorem ipsum dolor sit amet\",\"x-forwarded-port\":\"443\"}}";
 
   // Should get an error because we didn't set headers
