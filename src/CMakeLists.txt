@@ -6,4 +6,4 @@ set(SOURCES
 
 add_library(simple_curl_cpp ${SOURCES})
 target_include_directories(simple_curl_cpp PUBLIC include PRIVATE)
-target_link_libraries(simple_curl_cpp PRIVATE libcurl)
+target_link_libraries(simple_curl_cpp PUBLIC libcurl)
