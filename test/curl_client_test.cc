@@ -54,17 +54,18 @@ TEST_F(CurlClientTest, SetOption) {
 
   EXPECT_EQ(0, curl_resp.first);
 
-  actual_resp = "{\"headers\":{\"x-forwarded-proto\":\"https\",\"host\":"
-                "\"postman-echo.com\",\"accept\":\"*\\/*\",\"my-sample-header\":"
-                "\"Lorem ipsum dolor sit amet\",\"x-forwarded-port\":\"443\"}}";
+  actual_resp =
+      "{\"headers\":{\"x-forwarded-proto\":\"https\",\"host\":"
+      "\"postman-echo.com\",\"accept\":\"*\\/*\",\"my-sample-header\":"
+      "\"Lorem ipsum dolor sit amet\",\"x-forwarded-port\":\"443\"}}";
 
   // Should get an error because we didn't set headers
   EXPECT_NE(actual_resp, curl_resp.second);
 }
 
-TEST_F(CurlClientTest, SetHeader) {
+TEST_F(CurlClientTest, SetHeaders) {
   curl_client->setCurlUrl(HEADER_GET_URL);
-  curl_client->setHeader({"my-sample-header: Lorem ipsum dolor sit amet"});
+  curl_client->setHeaders({"my-sample-header: Lorem ipsum dolor sit amet"});
   std::pair<CURLcode, std::string> curl_resp = curl_client->sendGETRequest();
 
   // CURLE_OK means the get request went through, its equal to 0

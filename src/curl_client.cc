@@ -12,18 +12,19 @@ std::size_t curlWriterFunction(void *contents, std::size_t size,
         reinterpret_cast<const char *>(contents), len);
     return len;
   } catch (std::bad_alloc &ba) {
-    std::cout << "Custom curl writer function failed for request: " << ba.what()
-              << std::endl;
+    std::cerr << "ERROR: Custom curl writer function failed for request: "
+              << ba.what() << std::endl;
     return 0;
   }
 }
 
 CurlClient::CurlClient(std::string remote_url, int ip_protocol, int timeout,
-                       bool follow_redirects) {
+                       bool follow_redirects, bool debug) {
   m_curl_url = remote_url;
   m_curl_header_list = nullptr;
   curl_global_init(CURL_GLOBAL_ALL);
   m_curl = curl_easy_init();
+  m_debug = debug;
 
   if (m_curl) {
     // start remote url
@@ -38,16 +39,20 @@ CurlClient::CurlClient(std::string remote_url, int ip_protocol, int timeout,
     // follow redirects
     curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, follow_redirects);
 
-    std::cout << "Successfully initialized curl client" << std::endl;
+    if (m_debug) {
+      std::cout << "Successfully initialized curl client" << '\n';
+    }
   } else {
-    std::cout << "Error: Could not initialize curl" << std::endl;
+    std::cerr << "Error: Could not initialize curl" << '\n';
     this->~CurlClient();
     throw std::bad_exception();
   }
 }
 
 CurlClient::~CurlClient() {
-  std::cout << "Cleaning up curl client \n" << std::endl;
+  if (m_debug) {
+    std::cout << "Cleaning up curl client" << '\n';
+  }
   curl_slist_free_all(m_curl_header_list);
   curl_easy_cleanup(m_curl);
   curl_global_cleanup();
@@ -70,12 +75,13 @@ void CurlClient::setOption(CURLoption curl_option_command,
 
 void CurlClient::setOption(CURLoption curl_option_command,
                            std::string curl_option_value) {
-  if (curl_option_command == CURLOPT_URL)
+  if (curl_option_command == CURLOPT_URL) {
     m_curl_url = curl_option_value;
+  }
   curl_easy_setopt(m_curl, curl_option_command, curl_option_value.c_str());
 };
 
-void CurlClient::setHeader(const std::vector<std::string> &header_list) {
+void CurlClient::setHeaders(const std::vector<std::string> &header_list) {
   for (std::string hdr : header_list) {
     m_curl_header_list = curl_slist_append(m_curl_header_list, hdr.c_str());
   }
@@ -98,8 +104,7 @@ std::pair<CURLcode, std::string> CurlClient::makeRequest() {
     curl_resp_code = curl_easy_perform(m_curl);
     return std::make_pair(curl_resp_code, http_resp_data);
   } catch (int e) {
-    std::cout << "Something went wrong when making a request: " << e
-              << std::endl;
+    std::cerr << "Something went wrong when making a request: " << e << '\n';
     return std::make_pair(curl_resp_code, http_resp_data);
   }
 }
@@ -111,27 +116,28 @@ CurlClient::makeRequest(const std::string &post_params) {
 }
 
 std::pair<CURLcode, std::string> CurlClient::sendGETRequest() {
-  std::cout << "\n"
-            << "Sending GET request to: " << m_curl_url << "\n"
-            << std::endl;
+  if (m_debug)
+    std::cout << "Sending GET request to: " << m_curl_url << "\n";
 
   return makeRequest();
 }
 
 std::pair<CURLcode, std::string>
 CurlClient::sendPOSTRequest(const std::string &post_params) {
-  std::cout << "\n"
-            << "Sending POST request to: " << m_curl_url << std::endl;
-  std::cout << "with POST params: " << post_params << "\n" << std::endl;
+  if (m_debug) {
+    std::cout << "Sending POST request to: " << m_curl_url << '\n';
+    std::cout << "with POST params: " << post_params << "\n";
+  }
 
   return makeRequest(post_params);
 }
 
 std::pair<CURLcode, std::string>
 CurlClient::sendDELETERequest(const std::string &post_params) {
-  std::cout << "\n"
-            << "Sending DELETE request to: " << m_curl_url << std::endl;
-  std::cout << "with DELETE params: " << post_params << "\n" << std::endl;
+  if (m_debug) {
+    std::cout << "Sending DELETE request to: " << m_curl_url << '\n';
+    std::cout << "with DELETE params: " << post_params << "\n";
+  }
 
   setOption(CURLOPT_CUSTOMREQUEST, "DELETE");
   return makeRequest(post_params);

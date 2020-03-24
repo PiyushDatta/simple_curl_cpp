@@ -14,8 +14,8 @@ class CurlClient {
 public:
   // Initialize our curl client, set some default options if they aren't given.
   CurlClient(std::string remote_url, int ip_protocol = 1, int timeout = 10,
-             bool follow_redirects = 1);
-  //  Clean up curl client.
+             bool follow_redirects = 1, bool debug = false);
+  // Clean up curl client.
   ~CurlClient();
   // Change url target for curl client.
   void setCurlUrl(const std::string &new_url);
@@ -25,7 +25,7 @@ public:
   void setOption(CURLoption curl_option_command, long curl_option_value);
   void setOption(CURLoption curl_option_command, std::string curl_option_value);
   // Set header(s) for our curl request.
-  void setHeader(const std::vector<std::string> &header_list);
+  void setHeaders(const std::vector<std::string> &header_list);
   // GET
   std::pair<CURLcode, std::string> sendGETRequest();
   // POST
@@ -39,6 +39,7 @@ private:
   std::string m_curl_url;
   CURL *m_curl;
   struct curl_slist *m_curl_header_list;
+  bool m_debug;
 
   // Make a request to the set url (m_curl_url).
   std::pair<CURLcode, std::string> makeRequest();

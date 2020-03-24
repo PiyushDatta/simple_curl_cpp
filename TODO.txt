@@ -1,0 +1,4 @@
+==== Simple Curl C++ ====
+
+1. Have to make documentation on how to use this library
+2. Have to test curlWriterFunction in curl_client_test.cc
