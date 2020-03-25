@@ -1,6 +1,6 @@
 #include "./include/curl_client.h"
 
-namespace SimpleCURLClient {
+namespace simple_curlclient {
 
 // Custom writer function for the curl request.
 std::size_t curlWriterFunction(void *contents, std::size_t size,
@@ -18,8 +18,9 @@ std::size_t curlWriterFunction(void *contents, std::size_t size,
   }
 }
 
-CurlClient::CurlClient(std::string remote_url, int ip_protocol, int timeout,
-                       bool follow_redirects, bool debug) {
+CurlClient::CurlClient(const std::string &remote_url, const int &ip_protocol,
+                       const int &timeout, const bool &follow_redirects,
+                       const bool &debug) {
   m_curl_url = remote_url;
   m_curl_header_list = nullptr;
   curl_global_init(CURL_GLOBAL_ALL);
@@ -62,19 +63,18 @@ CurlClient::~CurlClient() {
 
 void CurlClient::setCurlUrl(const std::string &new_url) {
   m_curl_url = new_url;
-  // change remote url
   setOption(CURLOPT_URL, m_curl_url.c_str());
 }
 
 std::string CurlClient::getCurlUrl() { return m_curl_url; }
 
-void CurlClient::setOption(CURLoption curl_option_command,
-                           long curl_option_value) {
+void CurlClient::setOption(const CURLoption &curl_option_command,
+                           const long &curl_option_value) {
   curl_easy_setopt(m_curl, curl_option_command, curl_option_value);
 };
 
-void CurlClient::setOption(CURLoption curl_option_command,
-                           std::string curl_option_value) {
+void CurlClient::setOption(const CURLoption &curl_option_command,
+                           const std::string &curl_option_value) {
   if (curl_option_command == CURLOPT_URL) {
     m_curl_url = curl_option_value;
   }
@@ -116,9 +116,9 @@ CurlClient::makeRequest(const std::string &post_params) {
 }
 
 std::pair<CURLcode, std::string> CurlClient::sendGETRequest() {
-  if (m_debug)
+  if (m_debug) {
     std::cout << "Sending GET request to: " << m_curl_url << "\n";
-
+  }
   return makeRequest();
 }
 
@@ -128,18 +128,16 @@ CurlClient::sendPOSTRequest(const std::string &post_params) {
     std::cout << "Sending POST request to: " << m_curl_url << '\n';
     std::cout << "with POST params: " << post_params << "\n";
   }
-
   return makeRequest(post_params);
 }
 
 std::pair<CURLcode, std::string>
-CurlClient::sendDELETERequest(const std::string &post_params) {
+CurlClient::sendDELETERequest(const std::string &delete_params) {
   if (m_debug) {
     std::cout << "Sending DELETE request to: " << m_curl_url << '\n';
-    std::cout << "with DELETE params: " << post_params << "\n";
+    std::cout << "with DELETE params: " << delete_params << "\n";
   }
-
   setOption(CURLOPT_CUSTOMREQUEST, "DELETE");
-  return makeRequest(post_params);
+  return makeRequest(delete_params);
 }
-} // namespace SimpleCURLClient
+} // namespace simple_curlclient

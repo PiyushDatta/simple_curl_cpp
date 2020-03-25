@@ -9,21 +9,23 @@
 #ifndef UTILS_CURLCLIENT_H
 #define UTILS_CURLCLIENT_H
 
-namespace SimpleCURLClient {
+namespace simple_curlclient {
 class CurlClient {
 public:
   // Initialize our curl client, set some default options if they aren't given.
-  CurlClient(std::string remote_url, int ip_protocol = 1, int timeout = 10,
-             bool follow_redirects = 1, bool debug = false);
+  CurlClient(const std::string &remote_url, const int &ip_protocol = 1,
+             const int &timeout = 10, const bool &follow_redirects = 1,
+             const bool &debug = false);
   // Clean up curl client.
   ~CurlClient();
-  // Change url target for curl client.
+  // setters and getters for the url target for curl client.
   void setCurlUrl(const std::string &new_url);
-  // Get url that curl client is trying to access.
   std::string getCurlUrl();
   // Set an option for our curl client.
-  void setOption(CURLoption curl_option_command, long curl_option_value);
-  void setOption(CURLoption curl_option_command, std::string curl_option_value);
+  void setOption(const CURLoption &curl_option_command,
+                 const long &curl_option_value);
+  void setOption(const CURLoption &curl_option_command,
+                 const std::string &curl_option_value);
   // Set header(s) for our curl request.
   void setHeaders(const std::vector<std::string> &header_list);
   // GET
@@ -33,7 +35,7 @@ public:
   sendPOSTRequest(const std::string &post_params);
   // DELETE
   std::pair<CURLcode, std::string>
-  sendDELETERequest(const std::string &post_params);
+  sendDELETERequest(const std::string &delete_params);
 
 private:
   std::string m_curl_url;
@@ -46,6 +48,6 @@ private:
   // Make a request with post/delete parameters
   std::pair<CURLcode, std::string> makeRequest(const std::string &post_params);
 };
-} // namespace SimpleCURLClient
+} // namespace simple_curlclient
 
 #endif // UTILS_CURLCLIENT_H

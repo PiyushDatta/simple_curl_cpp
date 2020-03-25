@@ -1,19 +1,18 @@
 #include "../src/include/curl_client.h"
 #include <gtest/gtest.h>
-#include <string>
 
 const std::string HEADER_GET_URL = "https://postman-echo.com/headers";
 const std::string GET_URL = "https://postman-echo.com/get?foo1=bar1&foo2=bar2";
 const std::string POST_URL = "https://postman-echo.com/post";
 const std::string DELETE_URL = "https://postman-echo.com/delete";
-std::string actual_resp = "";
+std::string expected_resp = "";
 
 class CurlClientTest : public testing::Test {
 public:
-  SimpleCURLClient::CurlClient *curl_client;
+  simple_curlclient::CurlClient *curl_client;
 
   virtual void SetUp() {
-    curl_client = new SimpleCURLClient::CurlClient(GET_URL);
+    curl_client = new simple_curlclient::CurlClient(GET_URL);
   }
 
   virtual void TearDown() { delete curl_client; }
@@ -37,13 +36,13 @@ TEST_F(CurlClientTest, GETRequest) {
   // CURLE_OK means the get request went through, its equal to 0
   EXPECT_EQ(0, curl_resp.first);
 
-  actual_resp =
+  expected_resp =
       "{\"args\":{\"foo1\":\"bar1\",\"foo2\":\"bar2\"},\"headers\":{\"x-"
       "forwarded-proto\":\"https\",\"host\":\"postman-echo.com\",\"accept\":\"*"
       "/*\",\"x-forwarded-port\":\"443\"},\"url\":\"https://postman-echo.com/"
       "get?foo1=bar1&foo2=bar2\"}";
 
-  EXPECT_EQ(actual_resp, curl_resp.second);
+  EXPECT_EQ(expected_resp, curl_resp.second);
 }
 
 TEST_F(CurlClientTest, SetOption) {
@@ -54,13 +53,13 @@ TEST_F(CurlClientTest, SetOption) {
 
   EXPECT_EQ(0, curl_resp.first);
 
-  actual_resp =
+  expected_resp =
       "{\"headers\":{\"x-forwarded-proto\":\"https\",\"host\":"
       "\"postman-echo.com\",\"accept\":\"*\\/*\",\"my-sample-header\":"
       "\"Lorem ipsum dolor sit amet\",\"x-forwarded-port\":\"443\"}}";
 
   // Should get an error because we didn't set headers
-  EXPECT_NE(actual_resp, curl_resp.second);
+  EXPECT_NE(expected_resp, curl_resp.second);
 }
 
 TEST_F(CurlClientTest, SetHeaders) {
@@ -71,11 +70,12 @@ TEST_F(CurlClientTest, SetHeaders) {
   // CURLE_OK means the get request went through, its equal to 0
   EXPECT_EQ(0, curl_resp.first);
 
-  actual_resp = "{\"headers\":{\"x-forwarded-proto\":\"https\",\"host\":"
-                "\"postman-echo.com\",\"accept\":\"*\/*\",\"my-sample-header\":"
-                "\"Lorem ipsum dolor sit amet\",\"x-forwarded-port\":\"443\"}}";
+  expected_resp =
+      "{\"headers\":{\"x-forwarded-proto\":\"https\",\"host\":\"postman-echo."
+      "com\",\"accept\":\"*/*\",\"my-sample-header\":\"Lorem ipsum dolor sit "
+      "amet\",\"x-forwarded-port\":\"443\"}}";
 
-  EXPECT_EQ(actual_resp, curl_resp.second);
+  EXPECT_EQ(expected_resp, curl_resp.second);
 }
 
 TEST_F(CurlClientTest, POSTRequest) {
@@ -86,7 +86,7 @@ TEST_F(CurlClientTest, POSTRequest) {
   // CURLE_OK means the get request went through, its equal to 0
   EXPECT_EQ(0, curl_resp.first);
 
-  actual_resp =
+  expected_resp =
       "{\"args\":{},\"data\":\"\",\"files\":{},\"form\":{\"hello\":\"\"},"
       "\"headers\":{\"x-forwarded-proto\":\"https\",\"host\":\"postman-echo."
       "com\",\"content-length\":\"5\",\"accept\":\"*/"
@@ -94,7 +94,7 @@ TEST_F(CurlClientTest, POSTRequest) {
       "x-www-form-urlencoded\",\"x-forwarded-port\":\"443\"},\"json\":{"
       "\"hello\":\"\"},\"url\":\"https://postman-echo.com/post\"}";
 
-  EXPECT_EQ(actual_resp, curl_resp.second);
+  EXPECT_EQ(expected_resp, curl_resp.second);
 }
 
 TEST_F(CurlClientTest, DELETERequest) {
@@ -105,7 +105,7 @@ TEST_F(CurlClientTest, DELETERequest) {
   // CURLE_OK means the get request went through, its equal to 0
   EXPECT_EQ(0, curl_resp.first);
 
-  actual_resp =
+  expected_resp =
       "{\"args\":{},\"data\":\"\",\"files\":{},\"form\":{\"delete_req\":\"\"},"
       "\"headers\":{\"x-forwarded-proto\":\"https\",\"host\":\"postman-echo."
       "com\",\"content-length\":\"10\",\"accept\":\"*/"
@@ -113,5 +113,5 @@ TEST_F(CurlClientTest, DELETERequest) {
       "x-www-form-urlencoded\",\"x-forwarded-port\":\"443\"},\"json\":{"
       "\"delete_req\":\"\"},\"url\":\"https://postman-echo.com/delete\"}";
 
-  EXPECT_EQ(actual_resp, curl_resp.second);
+  EXPECT_EQ(expected_resp, curl_resp.second);
 }
